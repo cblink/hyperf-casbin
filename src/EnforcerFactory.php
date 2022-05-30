@@ -19,8 +19,7 @@ class EnforcerFactory
             $casbinConfig = new CasbinConfig(
                 $config['model']['config_type'],
                 $config['model']['config_content'],
-                $config['adapter']['class'],
-                $config['adapter']['constructor']
+                $config['adapter']['class']
             );
         }
 

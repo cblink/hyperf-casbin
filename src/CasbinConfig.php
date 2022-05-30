@@ -9,13 +9,13 @@ class CasbinConfig
     const CONFIG_TYPE_FILE = 1;
     const CONFIG_TYPE_TEXT = 2;
 
-    public int $type;
+    public $type;
 
-    public string $content;
+    public $content;
 
-    public string $adapterTableName;
+    public $adapterTableName;
 
-    public string $adapterClass;
+    public $adapterClass;
 
     public function __construct($type, $content, $adapterClass, $adapterTableName = 'casbin_rule')
     {
