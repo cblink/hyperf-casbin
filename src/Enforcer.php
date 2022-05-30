@@ -1,6 +1,6 @@
 <?php
 
-namespace Donjan\Casbin;
+namespace Cblink\HyperfCasbin;
 
 use Casbin\Enforcer as BaseEnforcer;
 use Psr\Container\ContainerInterface;
