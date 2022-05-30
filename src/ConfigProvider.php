@@ -19,6 +19,7 @@ class ConfigProvider
     {
         return [
             'dependencies' => [
+                Enforcer::class => EnforcerFactory::class,
             ],
             'commands' => [
             ],
