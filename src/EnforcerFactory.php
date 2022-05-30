@@ -35,7 +35,7 @@ class EnforcerFactory
             throw new InvalidArgumentException("Enforcer adapter is not defined.");
         }
 
-        $adapter = make($casbinConfig->adapterClass, ['table_name' => $casbinConfig->adapterTableName]);
+        $adapter = make($casbinConfig->adapterClass, ['tableName' => $casbinConfig->adapterTableName]);
         return new BaseEnforcer($model, $adapter);
     }
 }
