@@ -17,11 +17,14 @@ class CasbinConfig
 
     public $adapterClass;
 
+    public $key;
+
     public function __construct($type, $content, $adapterClass, $adapterTableName = 'casbin_rule')
     {
         $this->type = $type;
         $this->content = $content;
         $this->adapterClass = $adapterClass;
         $this->adapterTableName = $adapterTableName;
+        $this->key = sprintf("%s:%s:%s", $type,$content,$adapterClass);
     }
 }
