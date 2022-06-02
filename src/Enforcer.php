@@ -8,6 +8,7 @@ use Hyperf\Utils\ApplicationContext;
 
 /**
  * Enforcer
+ * @method BaseEnforcer make(CasbinConfig $config = null)
  * @method static bool enforce(...$rvals)
  * @method static array getRolesForUser(string $name, string ...$domain)
  * @method static array getUsersForRole(string $name, string ...$domain)
