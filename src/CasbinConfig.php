@@ -8,6 +8,7 @@ class CasbinConfig
 {
     const CONFIG_TYPE_FILE = 1;
     const CONFIG_TYPE_TEXT = 2;
+    const CONFIG_TYPE_CODE = 3;
 
     public $type;
 

@@ -28,10 +28,21 @@ class EnforcerFactory
 
         $model = new Model();
 
-        if (CasbinConfig::CONFIG_TYPE_FILE == $casbinConfig->type) {
-            $model->loadModel($casbinConfig->content);
-        } elseif (CasbinConfig::CONFIG_TYPE_TEXT == $casbinConfig->type) {
-            $model->loadModelFromText($casbinConfig->content);
+        switch ($casbinConfig->type) {
+            case CasbinConfig::CONFIG_TYPE_FILE:
+                $model->loadModel($casbinConfig->content);
+                break;
+            case CasbinConfig::CONFIG_TYPE_TEXT:
+                $model->loadModelFromText($casbinConfig->content);
+                break;
+            case CasbinConfig::CONFIG_TYPE_CODE:
+                $model->AddDef("r", "r", $casbinConfig->content['r']);
+                $model->AddDef("p", "p", $casbinConfig->content['p']);
+                $model->AddDef("g", "g", $casbinConfig->content['g']);
+                $model->AddDef("e", "e", $casbinConfig->content['e']);
+                $model->AddDef("m", "m", $casbinConfig->content['m']);
+                break;
+            default:;
         }
 
         if (!$casbinConfig->adapterClass) {
