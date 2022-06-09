@@ -50,6 +50,13 @@ class ConfigProvider
                     'source' => __DIR__ . '/../publish/rbac-model.conf',  // 对应的配置文件路径
                     'destination' => BASE_PATH . '/config/autoload/casbin-model/rbac-model.conf', // 复制为这个路径下的该文件
                 ],
+                [
+                    'id' => 'casbin_rbac_with_domains_model_conf',
+                    'description' => 'add casbin rbac with domains model config', // 描述
+                    // 建议默认配置放在 publish 文件夹中，文件命名和组件名称相同
+                    'source' => __DIR__ . '/../publish/rbac-with-domains-model.conf',  // 对应的配置文件路径
+                    'destination' => BASE_PATH . '/config/autoload/casbin-model/rbac-with-domains-model.conf', // 复制为这个路径下的该文件
+                ],
             ],
         ];
     }
