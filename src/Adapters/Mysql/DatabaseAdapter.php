@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Cblink\HyperfCasbin\Adapters\Mysql;
 
-use Hyperf\DB\DB;
+use Hyperf\DbConnection\Db;
 use Psr\Container\ContainerInterface;
 use Hyperf\Database\Schema\Schema;
 use Hyperf\Database\Schema\Blueprint;
