@@ -3,7 +3,7 @@
 namespace Cblink\HyperfCasbin\Adapters\Mysql;
 
 
-use Hyperf\Database\Model\Model;
+use Hyperf\DbConnection\Model\Model;
 
 /**
  * Rule Model.
