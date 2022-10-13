@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Cblink\HyperfCasbin\Adapters\Mysql;
 
+use Hyperf\Cache\Cache;
 use Hyperf\DbConnection\Db;
 use Psr\Container\ContainerInterface;
 use Hyperf\Database\Schema\Schema;
@@ -25,6 +26,8 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
 
     use AdapterHelper;
 
+    const POLICY_CACHE_PREFIX = 'mysql.policy.cache';
+
     /**
      * @var bool
      */
@@ -43,6 +46,11 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
     private $container;
 
     /**
+     * @var Cache
+     */
+    private $cache;
+
+    /**
      * Db
      * @var Db
      */
@@ -56,7 +64,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
 
     /**
      * tableName
-     * @var tableName
+     * @var string
      */
     protected $tableName;
 
@@ -72,23 +80,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
         $this->container = $container;
         $this->db = $this->container->get(Db::class);
         $this->eventDispatcher = $this->container->get(EventDispatcherInterface::class);
-        $this->initTable();
-    }
-
-    public function initTable()
-    {
-        if (!Schema::hasTable($this->tableName)) {
-            Schema::create($this->tableName, function (Blueprint $table) {
-                $table->increments('id');
-                $table->string('p_type')->nullable();
-                $table->string('v0')->nullable();
-                $table->string('v1')->nullable();
-                $table->string('v2')->nullable();
-                $table->string('v3')->nullable();
-                $table->string('v4')->nullable();
-                $table->string('v5')->nullable();
-            });
-        }
+        $this->cache = $container->get(Cache::class);
     }
 
     /**
@@ -113,7 +105,13 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
      */
     public function loadPolicy(Model $model): void
     {
-        $rows = $this->eloquent->select('ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5')->get()->toArray();
+        $rows = $this->cache->get(self::POLICY_CACHE_PREFIX);
+
+        if (empty($rows)) {
+            $rows = $this->eloquent->select('ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5')->get()->toArray();
+
+            $this->cache->set(self::POLICY_CACHE_PREFIX, $rows, 3600);
+        }
 
         foreach ($rows as $row) {
             $line = implode(', ', array_filter($row, function ($val) {
@@ -121,6 +119,15 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
                     }));
             $this->loadPolicyLine(trim($line), $model);
         }
+    }
+
+    public function refreshPolicy()
+    {
+        $this->cache->delete(self::POLICY_CACHE_PREFIX);
+
+        $rows = $this->eloquent->select('ptype', 'v0', 'v1', 'v2', 'v3', 'v4', 'v5')->get()->toArray();
+
+        $this->cache->set(self::POLICY_CACHE_PREFIX, $rows, 3600);
     }
 
     /**
@@ -144,6 +151,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
             }
         }
 
+        $this->refreshPolicy();
     }
 
     /**
@@ -159,6 +167,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
         $row = $this->savePolicyLine($ptype, $rule);
         $this->eloquent->create($row);
 
+        $this->refreshPolicy();
     }
 
     /**
@@ -177,6 +186,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
         }
         $this->eloquent->insert($rows);
 
+        $this->refreshPolicy();
     }
 
     /**
@@ -194,6 +204,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
         }
         $query->delete();
 
+        $this->refreshPolicy();
     }
 
     /**
@@ -213,6 +224,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
             }
             $this->db->commit();
 
+            $this->refreshPolicy();
         } catch (\Throwable $e) {
             $this->db->rollback();
             throw $e;
@@ -240,6 +252,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
         }
         $query->delete();
 
+        $this->refreshPolicy();
     }
 
     /**
@@ -263,6 +276,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
         }
         $query->update($update);
 
+        $this->refreshPolicy();
     }
 
     /**
@@ -283,6 +297,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
             }
             $this->db->commit();
 
+            $this->refreshPolicy();
         } catch (\Throwable $e) {
             $this->db->rollback();
             throw $e;
@@ -320,6 +335,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
             $query->delete();
             $this->db->commit();
 
+            $this->refreshPolicy();
             return $oldRules;
         } catch (\Throwable $e) {
             $this->db->rollback();

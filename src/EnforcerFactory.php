@@ -2,10 +2,8 @@
 
 namespace Cblink\HyperfCasbin;
 
-use Casbin\Enforcer as BaseEnforcer;
 use Casbin\Model\Model;
 use InvalidArgumentException;
-use phpDocumentor\Reflection\Types\Self_;
 
 class EnforcerFactory
 {
@@ -52,7 +50,7 @@ class EnforcerFactory
         $adapter = make($casbinConfig->adapterClass, ['tableName' => $casbinConfig->adapterTableName]);
 
         if (empty(self::$enforcers[$casbinConfig->key])) {
-            self::$enforcers[$casbinConfig->key] = new BaseEnforcer($model, $adapter);
+            self::$enforcers[$casbinConfig->key] = new TurnEnforcer($model, $adapter);
         }
 
         return self::$enforcers[$casbinConfig->key];
