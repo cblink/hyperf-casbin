@@ -26,7 +26,7 @@ class DatabaseAdapter implements Adapter, BatchAdapter, UpdatableAdapter, Filter
 
     use AdapterHelper;
 
-    const POLICY_CACHE_PREFIX = 'mysql.policy.cache';
+    const POLICY_CACHE_PREFIX = 'casbin.mysql.policy.cache';
 
     /**
      * @var bool
